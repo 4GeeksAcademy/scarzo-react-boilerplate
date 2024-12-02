@@ -1,9 +1,9 @@
-import { GenericPage } from "./pages/GenericPage";
+import { TodoList } from "./pages/TodoList";
 
 export const App = () => {
   return (
     <>
-      <GenericPage />
+      <TodoList />
     </>
   );
 };
