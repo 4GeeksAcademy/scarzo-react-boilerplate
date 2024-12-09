@@ -95,7 +95,14 @@ export const TodoList = () => {
                     onMouseEnter={() => setCurrentlyHighlighted(listItem.id)}
                     onMouseLeave={() => setCurrentlyHighlighted("")}
                   >
-                    <div>{listItem.task}</div>
+                    <div
+                      style={{
+                        pointerEvents: "none",
+                        userSelect: "none",
+                      }}
+                    >
+                      {listItem.task}
+                    </div>
                     <Badge
                       bg="light"
                       text="dark"
@@ -107,6 +114,7 @@ export const TodoList = () => {
                           currentlyHighlighted === listItem.id
                             ? "visible"
                             : "hidden",
+                        userSelect: "none",
                       }}
                     >
                       X
