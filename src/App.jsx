@@ -1,9 +1,9 @@
-import { TodoList } from "./pages/TodoList";
+import ListComponent from "./pages/TodoList";
 
 export const App = () => {
   return (
     <>
-      <TodoList />
+      <ListComponent />
     </>
   );
 };

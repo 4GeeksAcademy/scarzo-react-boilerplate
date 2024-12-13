@@ -1,135 +1,81 @@
-import { isEmpty } from "lodash";
 import { useState } from "react";
-import {
-  Badge,
-  Col,
-  Container,
-  FormControl,
-  InputGroup,
-  ListGroup,
-  ListGroupItem,
-  Row,
-} from "react-bootstrap";
+import { useEffect } from "react";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
+import Button from "react-bootstrap/Button";
 
-export const TodoList = () => {
-  const initialListItems = [
-    {
-      task: "Wash dishes",
-      id: crypto.randomUUID(),
-    },
-    {
-      task: "Clean clothes",
-      id: crypto.randomUUID(),
-    },
-  ];
+const ListComponent = () => {
+  const [list, setList] = useState([]);
+  const [text, setText] = useState("");
+  // Definition of the function for add item to list
 
-  const [listItems, setListItems] = useState(initialListItems);
-  const [inputValue, setInputValue] = useState("");
-  const [currentlyHighlighted, setCurrentlyHighlighted] = useState("");
-
-  const createItem = (itemTask) => {
-    const newItemId = crypto.randomUUID();
-    const newItems = listItems.concat({
-      task: itemTask,
-      id: newItemId,
-    });
-    setListItems(newItems);
+  //Definition of the function for refreshing my list
+  const refreshList = () => {
+    fetch("https://playground.4geeks.com/todo/users/Pedro", { method: "GET" })
+      .then((resp) => {
+        return resp.json();
+      })
+      .then((data) => {
+        setList(data.todos);
+      })
+      .catch((error) => {
+        console.log("La cagaste");
+      });
   };
 
-  const deleteItem = (itemId) => {
-    const filteredItems = listItems.filter((listItem) => {
-      return listItem.id !== itemId;
-    });
-    setListItems(filteredItems);
+  const addItemToList = (text) => {
+    const task = {
+      label: text,
+      is_done: false,
+    };
+    fetch("https://playground.4geeks.com/todo/todos/Pedro", {
+      method: "POST",
+      body: JSON.stringify(task),
+      headers: { "Content-Type": "application/json" },
+    }).then(() => refreshList());
   };
 
-  const isInputValueValid = () => {
-    const isFilled = inputValue;
-    const isSemantic = inputValue.replace(/\s/g, "");
-    return isFilled && isSemantic;
-  };
-
-  const captureEnter = (keyDown) => {
-    if (keyDown === "Enter" && isInputValueValid() && listItems.length < 10) {
-      createItem(inputValue);
-      setInputValue("");
-    }
-  };
+  //First call for refreshing the list
+  useEffect(() => {
+    refreshList();
+  }, []);
 
   return (
-    <Container
-      style={{
-        display: "flex",
-        height: "100vh",
-        flexDirection: "column",
-        justifyContent: "center",
-      }}
-    >
-      <Row className="justify-content-md-center">
-        <Col xs={4}>
-          <h3>todos:</h3>
-        </Col>
-      </Row>
-      <Row className="justify-content-md-center mt-2">
-        <Col xs={4}>
-          <InputGroup>
-            <FormControl
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => captureEnter(e.key)}
-              placeholder="Enter new Task"
-            />
-          </InputGroup>
-        </Col>
-      </Row>
-      <Row className="justify-content-md-center mt-4">
-        <Col xs={4}>
-          <ListGroup>
-            {!isEmpty(listItems) ? (
-              listItems.map((listItem) => {
-                return (
-                  <ListGroupItem
-                    key={listItem.id}
-                    className="d-flex justify-content-between align-items-start"
-                    onMouseEnter={() => setCurrentlyHighlighted(listItem.id)}
-                    onMouseLeave={() => setCurrentlyHighlighted("")}
-                  >
-                    <div
-                      style={{
-                        pointerEvents: "none",
-                        userSelect: "none",
-                      }}
-                    >
-                      {listItem.task}
-                    </div>
-                    <Badge
-                      bg="light"
-                      text="dark"
-                      onClick={() => deleteItem(listItem.id)}
-                      pill
-                      style={{
-                        cursor: "pointer",
-                        visibility:
-                          currentlyHighlighted === listItem.id
-                            ? "visible"
-                            : "hidden",
-                        userSelect: "none",
-                      }}
-                    >
-                      X
-                    </Badge>
-                  </ListGroupItem>
-                );
-              })
-            ) : (
-              <ListGroupItem className="d-flex justify-content-between align-items-start">
-                <div>No tasks, add a task</div>
-              </ListGroupItem>
-            )}
-          </ListGroup>
-        </Col>
-      </Row>
-    </Container>
+    <>
+      <InputGroup className="mb-3">
+        <Form.Control
+          value={text}
+          onChange={(e) => {
+            setText(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              addItemToList(text);
+              setText("");
+            }
+          }}
+          placeholder={"Tip something to do"}
+          aria-label="Default"
+          aria-describedby="inputGroup-sizing-default"
+        />
+      </InputGroup>
+      {list.map((element) => {
+        return (
+          <div
+            style={{
+              width: "100% ",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+            id={element.id}
+          >
+            {element.label}
+            <Button variant="outline-secondary"> X </Button>
+          </div>
+        );
+      })}
+    </>
   );
 };
+
+export default ListComponent;
