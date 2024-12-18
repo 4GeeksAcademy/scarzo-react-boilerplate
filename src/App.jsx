@@ -1,9 +1,11 @@
+import { Routes, Route } from "react-router";
+
 import { GenericPage } from "./pages/GenericPage";
 
 export const App = () => {
   return (
-    <>
-      <GenericPage />
-    </>
+    <Routes>
+      <Route path="*" element={<GenericPage />} />
+    </Routes>
   );
 };
