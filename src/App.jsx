@@ -1,16 +1,22 @@
 import { Routes, Route } from "react-router";
 
-import { ListsPage } from "./pages/ListsPage";
-import { FilmPage } from "./pages/FilmPage";
 import { NavBar } from "./components/NavBar";
+import { routesConfig } from "./services/routes/routesConfig";
 
 export const App = () => {
   return (
     <>
       <NavBar />
       <Routes>
-        <Route path="*" element={<ListsPage />} />
-        <Route path="/film/:filmId" element={<FilmPage />} />
+        {routesConfig.map((route) => {
+          return (
+            <Route
+              key={route.name}
+              path={route.path}
+              element={route.component}
+            />
+          );
+        })}
       </Routes>
     </>
   );

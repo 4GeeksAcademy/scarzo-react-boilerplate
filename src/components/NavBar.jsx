@@ -5,21 +5,15 @@ import { NavLink, useLocation } from "react-router";
 import { Badge, Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 
 export const NavBar = () => {
-  const { favorites, setFavorites } = useContext(FavoritesContext);
+  const { favorites, deleteFavorite } = useContext(FavoritesContext);
 
   let location = useLocation();
-
-  const deleteFavorite = (id, type) => {
-    setFavorites(
-      favorites.filter((favorite) => {
-        return !(favorite.id === id && favorite.type === type);
-      }),
-    );
-  };
 
   const parsedLocation = () => {
     const locations = {
       film: "Films",
+      species: "Species",
+      starship: "Starships",
     };
     return locations[location.pathname.split("/")[1]] || "";
   };
@@ -43,15 +37,15 @@ export const NavBar = () => {
                         <NavLink to={`${favorite.type}/${favorite.id}`}>
                           {favorite.name}
                         </NavLink>
+                        <Badge
+                          onClick={() => {
+                            deleteFavorite(favorite.id, favorite.type);
+                          }}
+                        >
+                          {" "}
+                          X{" "}
+                        </Badge>
                       </NavDropdown.Item>
-                      <Badge
-                        onClick={() => {
-                          deleteFavorite(favorite.id, favorite.type);
-                        }}
-                      >
-                        {" "}
-                        X{" "}
-                      </Badge>
                     </div>
                   );
                 })}
